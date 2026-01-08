@@ -235,6 +235,43 @@ body {
   .envelope-wrapper.open .envelope .flap {
     display: none;
   }
+
+  /* Ensure full scrolling capabilities within the card, not the media query root */
+  .card.open {
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Optimization for very small screens (around 350px) */
+@media (max-width: 380px) {
+  .card.open {
+    padding: 10px;
+  }
+
+  .card-content {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .greeting {
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    /* Give some top space */
+  }
+
+  .body-text {
+    font-size: 0.95rem;
+  }
+
+  .question {
+    font-size: 1.1rem;
+  }
+
+  .buttons button {
+    padding: 8px 20px;
+    font-size: 0.9rem;
+  }
 }
 
 .card-content {
