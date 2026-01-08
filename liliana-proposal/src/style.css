@@ -1,0 +1,330 @@
+:root {
+  --bg-color: #fce4ec;
+  --envelope-color: #ff80ab;
+  --envelope-dark: #f06292;
+  --flap-color: #ff80ab;
+  --card-color: #fff;
+  --text-color: #4a4a4a;
+  --accent-color: #c2185b;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--bg-color) 0%, #ffffff 100%);
+  font-family: 'Nunito', sans-serif;
+  overflow: hidden;
+  /* Prevent scroll when card pops */
+}
+
+.container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-text {
+  position: absolute;
+  top: 10%;
+  color: var(--accent-color);
+  font-family: 'Dancing Script', cursive;
+  font-size: 2rem;
+  animation: fadeIn 2s ease-in-out;
+  z-index: 10;
+}
+
+/* Envelope Structure */
+.envelope-wrapper {
+  position: relative;
+  width: 300px;
+  height: 200px;
+  cursor: pointer;
+  perspective: 1000px;
+}
+
+.envelope {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.front {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-left: 150px solid transparent;
+  border-right: 150px solid transparent;
+  border-bottom: 100px solid var(--envelope-dark);
+  z-index: 3;
+}
+
+/* Creating the pocket effect */
+.front::after {
+  content: '';
+  position: absolute;
+  bottom: -100px;
+  /* offset by border-bottom height */
+  left: -150px;
+  width: 300px;
+  height: 100px;
+  background-color: var(--envelope-color);
+  clip-path: polygon(0 0, 50% 100%, 100% 0);
+  /* Triangle pointing down? No this is wrong for pocket. */
+  /* Let's redo the pocket using borders simply */
+}
+
+/* Redoing envelope with standard CSS shapes for better 3D handling */
+.front {
+  /* The bottom pocket */
+  width: 0;
+  height: 0;
+  border-top: 100px solid transparent;
+  border-bottom: 100px solid var(--envelope-color);
+  border-left: 150px solid var(--envelope-dark);
+  border-right: 150px solid var(--envelope-dark);
+  z-index: 3;
+  border-radius: 0 0 5px 5px;
+}
+
+/* Wait, borders creates triangles. 
+   Top border transparent means empty top.
+   Bottom colored means content.
+   Left/Right colored creates the sides.
+*/
+.envelope>.front {
+  /* Using a simpler approach for the pocket which sits ON TOP of the card */
+  position: absolute;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 150px solid var(--envelope-color);
+  border-right: 150px solid var(--envelope-color);
+  border-top: 100px solid transparent;
+  border-bottom: 100px solid var(--envelope-dark);
+  /* This makes the bottom triangle */
+  /* Actually for a standard envelope: 
+       Side flaps, Bottom flap.
+    */
+  /* simplified: just an image or SVG is easier, but CSS triangles work too. */
+  /* Let's stick to a clean CSS envelope */
+  border: none;
+  background: transparent;
+}
+
+/* Actual shapes */
+.envelope .back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: var(--envelope-dark);
+  border-radius: 5px;
+  z-index: 1;
+}
+
+.envelope .front-pocket {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  /* Create the envelope "V" shape with clip-path */
+  background: var(--envelope-color);
+  clip-path: polygon(0 100%, 100% 100%, 100% 50%, 50% 80%, 0 50%);
+}
+
+/* Let's revert .front and use a new approach in HTML if needed, but I can just reuse .front as .front-pocket */
+
+.front {
+  width: 100%;
+  height: 100%;
+  background: var(--envelope-color);
+  clip-path: polygon(0% 100%, 100% 100%, 100% 35%, 50% 65%, 0% 35%);
+  z-index: 3;
+  position: absolute;
+  bottom: 0;
+  border-radius: 0 0 5px 5px;
+}
+
+.flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--envelope-dark);
+  clip-path: polygon(0 0, 100% 0, 50% 55%);
+  transform-origin: top;
+  transition: transform 0.6s ease-in-out, z-index 0.6s;
+  z-index: 4;
+  border-radius: 5px 5px 0 0;
+}
+
+.flap.open {
+  transform: rotateX(180deg);
+  z-index: 1;
+  /* Moves behind card */
+}
+
+/* Card */
+.card {
+  position: absolute;
+  bottom: 0;
+  left: 5%;
+  /* Center in envelope with some margin */
+  width: 90%;
+  height: 90%;
+  background: var(--card-color);
+  border-radius: 5px;
+  transition: transform 1s ease-in-out, height 1s ease-in-out, z-index 0.1s;
+  z-index: 2;
+  padding: 15px;
+  box-sizing: border-box;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  overflow-y: hidden;
+  text-align: center;
+}
+
+.card.open {
+  /* Slide up and grow */
+  transform: translateY(-50px) scale(1.1);
+  z-index: 5;
+  /* On top of everything */
+  height: 400px;
+  /* Expands to fit text */
+  bottom: -100px;
+  /* Adjust positioning */
+  overflow-y: auto;
+}
+
+/* Mobile specific for card open */
+@media (max-width: 600px) {
+  .card.open {
+    width: 100vw;
+    height: 100vh;
+    left: -12.5%;
+    /* Correct centering relative to envelope wrapper 300px vs Screen width calculation might be tricky without JS */
+    /* Better approach for full screen card: Fixed position */
+    position: fixed;
+    top: 0;
+    left: 0;
+    transform: none;
+    bottom: auto;
+    border-radius: 0;
+    display: flex;
+    /* Maintain flex */
+  }
+
+  .envelope-wrapper.open {
+    /* Hide envelope or move away */
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+}
+
+.card-content {
+  opacity: 0;
+  transition: opacity 1s 0.8s;
+  /* Fade in after card expands */
+  width: 100%;
+  max-width: 500px;
+  margin: auto;
+}
+
+.card.open .card-content {
+  opacity: 1;
+}
+
+.greeting {
+  font-family: 'Dancing Script', cursive;
+  font-size: 1.8rem;
+  color: var(--accent-color);
+  margin-bottom: 0.5rem;
+}
+
+.body-text {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text-color);
+  margin-bottom: 1rem;
+}
+
+.question {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: var(--accent-color);
+  margin: 1.5rem 0;
+}
+
+.buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+button {
+  padding: 10px 25px;
+  border: none;
+  border-radius: 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  transition: transform 0.2s;
+  color: white;
+}
+
+#btnYes {
+  background-color: #4caf50;
+  box-shadow: 0 4px 6px rgba(76, 175, 80, 0.3);
+}
+
+#btnNo {
+  background-color: #ef5350;
+  box-shadow: 0 4px 6px rgba(239, 83, 80, 0.3);
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+.hidden-message {
+  display: none;
+  position: absolute;
+  bottom: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  color: var(--accent-color);
+  font-weight: bold;
+  text-align: center;
+  max-width: 80%;
+  z-index: 20;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
