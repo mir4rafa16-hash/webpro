@@ -217,23 +217,23 @@ body {
   .card.open {
     width: 100vw;
     height: 100vh;
-    left: -12.5%;
-    /* Correct centering relative to envelope wrapper 300px vs Screen width calculation might be tricky without JS */
-    /* Better approach for full screen card: Fixed position */
-    position: fixed;
-    top: 0;
     left: 0;
+    top: 0;
+    position: fixed;
     transform: none;
     bottom: auto;
     border-radius: 0;
     display: flex;
-    /* Maintain flex */
+    transition: none;
+    /* No animation for mobile */
+    z-index: 999;
   }
 
-  .envelope-wrapper.open {
-    /* Hide envelope or move away */
-    opacity: 0;
-    transition: opacity 0.5s;
+  /* When open, hide the envelope parts (flap, front, back) */
+  .envelope-wrapper.open .envelope .front,
+  .envelope-wrapper.open .envelope .back,
+  .envelope-wrapper.open .envelope .flap {
+    display: none;
   }
 }
 
